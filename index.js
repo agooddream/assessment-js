@@ -1,3 +1,6 @@
+
+const utils = require('./deepclone')
+
 /**
  * Example problem with existing solution and passing test.
  * See problem 0 in the spec file for the assertion
@@ -103,7 +106,21 @@ exports.createGreeting = (fn, arg1) => {
  * @returns {Object}
  */
 exports.setDefaults = (def) => {
-    return (arg) => ({ ...def, ...arg })
+    // 使用深拷贝，对象间属性独立
+    return (args) => {
+        if (!isObject(def) || !isObject(args)) { return args }
+        for (let [key, value] of Object.entries(def)) {
+            if (!args.hasOwnProperty(key)) {
+                Object.defineProperty(args, key, {
+                    value: utils.deepClone(value),
+                    configurable: true,
+                    enumerable: true,
+                    writable: true
+                })
+            }
+        }
+        return args
+    }
 };
 /**
  * 返回 Promise ，fulfilled 值是稳定的结构
